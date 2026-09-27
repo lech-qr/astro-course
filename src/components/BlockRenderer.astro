@@ -1,0 +1,107 @@
+﻿---
+import BlockRendererInner from '../components/BlockRenderer.astro';
+import Button from '../components/Button.astro';
+import Heading from '../components/Heading.astro';
+import Cover from '../components/Cover.astro';
+import Navigation from '../components/Navigation.astro';
+import NavigationSubmenu from '../components/NavigationSubmenu.astro';
+import NavigationLink from '../components/NavigationLink.astro';
+import { getBlockStyling } from '@wp-block-tools/styles';
+import type { Block } from '@wp-block-tools/styles';
+import { Image } from 'astro:assets';
+type Props = {
+    blocks: Block[];
+}
+const { blocks } = Astro.props;
+console.log("Blocks in BlockRenderer:", blocks);
+---
+{blocks.map(block => {
+    const {styles, classes} = getBlockStyling(block);
+    switch(block.name) {
+        case "core/button":
+            return <Button
+                classes={classes} 
+                styles={styles} 
+                url={block.attributes?.url}
+                content={block.attributes?.content || ""}
+            ></Button>            
+        case "core/heading":
+            return <Heading
+                level={block.attributes?.level || 2}
+                classes={classes} 
+                styles={styles} 
+                content={block.attributes?.content || ""}
+            ></Heading>
+        case 'core/cover':
+            return <Cover 
+                classes={classes} 
+                styles={styles} 
+                url={block.attributes?.url}
+                width={block.attributes?.width}
+                height={block.attributes?.height}
+                dimRatio={block.attributes?.dimRatio}
+                overlayColor={block.attributes?.overlayColor}
+                customOverlayColor={block.attributes?.customOverlayColor}
+            >
+                <BlockRendererInner blocks={block.innerBlocks || []} />
+            </Cover>
+        case "core/navigation-submenu":
+            return (
+                <NavigationSubmenu
+                    classes={classes} 
+                    styles={styles} 
+                    label={block.attributes?.label || ""}
+                    url={block.attributes?.url || ""}
+                >
+                    <BlockRendererInner blocks={block.innerBlocks || []} />
+                </NavigationSubmenu>
+            );
+        case "core/navigation-link":
+            return (
+                <NavigationLink 
+                    classes={classes} 
+                    styles={styles} 
+                    label={block.attributes?.label || ""}
+                    url={block.attributes?.url || ""}
+                />
+            );
+        case "core/navigation":
+            return (
+                <Navigation classes={classes} styles={styles}>
+                    <BlockRendererInner blocks={block.innerBlocks || []} />
+                </Navigation>
+            );
+        case "core/paragraph":
+            return (
+                <p class={classes} style={styles} set:html={block.attributes?.content}></p>
+            );
+        case "core/columns":
+        case "core/column":
+        case "core/post-content":
+        case "core/group":
+        case "core/buttons":
+            return (
+                <div class={classes} style={styles}>
+                    <BlockRendererInner blocks={block.innerBlocks || []} />
+                </div>
+            );
+            case "core/site-logo":
+                return (
+                    <div class={classes} style={styles}>
+                        {/* <img width={block.attributes?.width} src={block.attributes?.url} alt={block.attributes?.alt || "Site Logo"} /> */}
+                        <Image 
+                            width={block.attributes?.width || 50} 
+                            height={block.attributes?.width || 50}
+                            src={block.attributes?.url || ""} 
+                            alt="Site logo"
+                        />
+                    </div>
+                );
+            case "core/template-part":
+                return (
+                    <BlockRendererInner blocks={block.innerBlocks || []} />
+                );
+            default:
+                return null;
+    }
+})}

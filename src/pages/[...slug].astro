@@ -1,0 +1,69 @@
+---
+import "../styles/global.css";
+import BlockRenderer from '../components/BlockRenderer.astro';
+import type { Block } from "@wp-block-tools/styles";
+import CommonHead from '../components/CommonHead.astro';
+
+export async function getStaticPaths() {
+  const response = await fetch(`${import.meta.env.WPGRAPHQL_URL}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      query: `
+        query AllPages {
+          pages(first: 10000) {
+            nodes {
+              uri
+            }
+          }
+        }
+      `
+    })
+  });
+  const {data} = await response.json();
+  return data.pages.nodes.map((page: any) => ({
+    params: {slug: page.uri === "/" ? undefined : page.uri},
+  }))
+}
+
+const response = await fetch(`${import.meta.env.WPGRAPHQL_URL}`, {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    query: `
+      query PageQuery($uri: String!) {
+        nodeByUri(uri: $uri) {
+          ... on Page {
+            id
+            blocks
+            seo {
+              metaDesc
+              title
+            }
+          }
+        }
+      }
+    `,
+    variables: {
+      uri: Astro.params.slug || "/",
+    }
+  })
+});
+const {data} = await response.json();
+// const {blocks, seo} = Astro.props;
+const blocks = (data.nodeByUri?.blocks || []) as Block[];
+const seo = data.nodeByUri?.seo;
+---
+
+<!doctype html>
+<html lang="en">
+  <CommonHead title={seo.title || ""} description={seo.metaDesc || ""} />
+  <body>
+    <BlockRenderer blocks={blocks} />
+    <!-- <h2 class="text-2xl bg-red-700">test</h2> -->
+  </body>
+</html>
