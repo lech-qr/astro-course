@@ -17,7 +17,7 @@ const href = replaceUrls(url, Astro.url.host);
     <a href={href}>
         {label} <FontAwesomeIcon className="text-xs pl-1" icon={faChevronDown}/>
     </a>
-    <ul class="hidden group-hover:block absolute top-full right-0 text-right whitespace-nowrap bg-event-horizon py-2 [&_a]:block [&_a]:px-4 [&_a]:py-2">
+    <ul class="z-20 hidden group-hover:block absolute top-full right-0 text-right whitespace-nowrap bg-event-horizon py-2 [&_a]:block [&_a]:px-4 [&_a]:py-2">
         <slot />
     </ul>
 </li>

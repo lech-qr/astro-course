@@ -3,10 +3,13 @@ import BlockRendererInner from '../components/BlockRenderer.astro';
 import Button from '../components/Button.astro';
 import Heading from '../components/Heading.astro';
 import Cover from '../components/Cover.astro';
+import TickItem from '../components/TickItem.astro';
+import SocialLink from '../components/SocialLink.astro';
 import Navigation from '../components/Navigation.astro';
 import NavigationSubmenu from '../components/NavigationSubmenu.astro';
 import NavigationLink from '../components/NavigationLink.astro';
 import { getBlockStyling } from '@wp-block-tools/styles';
+import { mapWPStylesToCSS, mapWPClassesToCSS } from '../utils/wpStyles';
 import type { Block } from '@wp-block-tools/styles';
 import { Image } from 'astro:assets';
 type Props = {
@@ -16,8 +19,27 @@ const { blocks } = Astro.props;
 console.log("Blocks in BlockRenderer:", blocks);
 ---
 {blocks.map(block => {
-    const {styles, classes} = getBlockStyling(block);
+    const base = getBlockStyling(block); // to co działało wcześniej - od autora kursu
+    const extraStyles = mapWPStylesToCSS(block.attributes); // to czego brakowało (textAlign itp.)
+    const extraClasses = mapWPClassesToCSS(block.attributes);
+
+    const styles = `${base.styles ?? ''};${extraStyles}`;
+    const classes = `${base.classes ?? ''} ${extraClasses}`.trim();
     switch(block.name) {
+        case "astroestate/tick-item":
+            return <TickItem>
+                <BlockRendererInner blocks={block.innerBlocks || []} />
+            </TickItem>
+        case "core/image":
+            return <img 
+                src={block.attributes?.url} 
+                width={block.attributes?.width} 
+                height={block.attributes?.height} 
+                class={classes} 
+                style={styles} 
+                alt={block.attributes?.alt || ""}
+                loading="lazy"
+            />
         case "core/button":
             return <Button
                 classes={classes} 
@@ -42,6 +64,8 @@ console.log("Blocks in BlockRenderer:", blocks);
                 dimRatio={block.attributes?.dimRatio}
                 overlayColor={block.attributes?.overlayColor}
                 customOverlayColor={block.attributes?.customOverlayColor}
+                minHeight={block.attributes?.minHeight}
+                minHeightUnit={block.attributes?.minHeightUnit}
             >
                 <BlockRendererInner blocks={block.innerBlocks || []} />
             </Cover>
@@ -80,11 +104,19 @@ console.log("Blocks in BlockRenderer:", blocks);
         case "core/post-content":
         case "core/group":
         case "core/buttons":
+        case "core/social-links":
             return (
                 <div class={classes} style={styles}>
                     <BlockRendererInner blocks={block.innerBlocks || []} />
                 </div>
             );
+            case "core/social-link":
+                return <SocialLink 
+                    url={block.attributes?.url} 
+                    service={block.attributes?.service} 
+                    classes={classes} 
+                    styles={styles} 
+                    />
             case "core/site-logo":
                 return (
                     <div class={classes} style={styles}>

@@ -10,8 +10,26 @@ type Props = {
     dimRatio?: number;
     overlayColor?: string;
     customOverlayColor?: string;
+    minHeight?: number;
+    minHeightUnit?: string;
 }
-const {classes, styles, url, width, height, dimRatio = 50, overlayColor, customOverlayColor} = Astro.props;
+const {
+    classes, 
+    styles, 
+    url, 
+    width, 
+    height, 
+    dimRatio = 50, 
+    overlayColor, 
+    customOverlayColor,
+    minHeight,
+    minHeightUnit
+} = Astro.props;
+
+let minHeightValue = "";
+if(minHeight && minHeightUnit) {
+    minHeightValue = `min-height: ${minHeight}${minHeightUnit}`;
+}
 
 let overlayStyle = "";
 if(customOverlayColor){
@@ -29,11 +47,11 @@ if(overlayColor){
             height={height || 999} 
             src={url} alt="" />
     }
-    <div 
+    <div
         class="absolute top-0 right-0 bottom-0 left-0 bg-black max-w-full! mt-0!" 
         style={`opacity: ${dimRatio / 100}; ${overlayStyle}`} 
-    >test</div>
-    <div class="relative flex flex-col justify-center min-h-430px z-10 mt-0!">
+    />
+    <div style={minHeightValue} class="relative flex flex-col justify-center gap-4 z-10 mt-0!">
         <slot />
     </div>
 
