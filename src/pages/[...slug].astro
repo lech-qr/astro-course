@@ -80,7 +80,6 @@ const {data} = await response.json();
 const blocks = (data.nodeByUri?.blocks || []) as Block[];
 const seo = data.nodeByUri?.seo;
 const postId = data.nodeByUri?.databaseId;
-console.log("postId na stronie szczegółów:", postId);
 ---
 
 <!doctype html>

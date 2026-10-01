@@ -82,3 +82,13 @@ h6 {
 strong {
   font-weight: 700;
 }
+
+.wpcf7-form {
+  @apply max-w-sm;
+}
+.wpcf7-form-control {
+  @apply border border-black p-2 w-full resize-none;
+}
+.wpcf7-submit {
+  @apply w-full text-white inline-block uppercase font-bold tracking-[1.3px] bg-event-horizon rounded-full py-3 px-6;
+}

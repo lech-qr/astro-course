@@ -9,7 +9,6 @@ type Props = {
 };
 const { classes, styles, level, content, transitionName } = Astro.props;
 const Element: HTMLTag = `h${level}`
-console.log("Transition name na karcie: " + transitionName)
 ---
 {!!transitionName &&
     <Element 

@@ -1,4 +1,5 @@
 ﻿---
+import ContactForm7 from '../components/ContactForm7.tsx';
 import BlockRendererInner from '../components/BlockRenderer.astro';
 import Button from '../components/Button.astro';
 import Heading from '../components/Heading.astro';
@@ -29,6 +30,14 @@ const { blocks, postId } = Astro.props;
     const styles = `${base.styles ?? ''};${extraStyles}`;
     const classes = `${base.classes ?? ''} ${extraClasses}`.trim();
     switch(block.name) {
+        case "contact-form-7/contact-form-selector":
+            return (
+                <ContactForm7 
+                    client:only="react"
+                    formId={block.attributes?.id} 
+                    formMarkup={block.attributes?.formMarkup} 
+                />
+            );
         case "astroestate/property-search":
             return (
                 <PropertySearch />
