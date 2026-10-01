@@ -8,6 +8,7 @@ const { PUBLIC_WP_URL } = loadEnv(process.env.NODE_ENV ?? "development", process
 
 // https://astro.build/config
 export default defineConfig({
+  site: "https://astro.kurant.org.pl",
   image: {
     domains: [PUBLIC_WP_URL]
   },
