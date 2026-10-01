@@ -5,8 +5,24 @@ type Props = {
     styles: string;
     level: 1 | 2 | 3 | 4 | 5 | 6;
     content: string;
+    transitionName: string;
 };
-const { classes, styles, level, content } = Astro.props;
+const { classes, styles, level, content, transitionName } = Astro.props;
 const Element: HTMLTag = `h${level}`
+console.log("Transition name na karcie: " + transitionName)
 ---
-<Element set:html={content} style={styles} class={classes} />
+{!!transitionName &&
+    <Element 
+        transition:name={transitionName} 
+        set:html={content} 
+        style={styles} 
+        class={classes} 
+    />
+}
+{!transitionName &&
+    <Element 
+        set:html={content} 
+        style={styles} 
+        class={classes} 
+    />
+}

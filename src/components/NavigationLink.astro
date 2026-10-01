@@ -7,7 +7,7 @@ type Props = {
     url: string;
 }
 const { styles, classes, label, url } = Astro.props;
-console.log(Astro.url);
+// console.log(Astro.url);
 const href = replaceUrls(url, Astro.url.host);
 ---
 <li class={classes} style={styles}>

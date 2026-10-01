@@ -13,19 +13,41 @@ export async function getStaticPaths() {
     body: JSON.stringify({
       query: `
         query AllPages {
-          pages(first: 10000) {
+          pages(first: 9999) {
             nodes {
               uri
+              blocks(attributes: false)
             }
-          }
+          },
+          properties(first: 9999) {
+            nodes {
+              uri
+              blocks(attributes: false)
+            }
+          }          
         }
       `
     })
   });
   const {data} = await response.json();
-  return data.pages.nodes.map((page: any) => ({
+  return [...data.pages.nodes, ...data.properties.nodes].filter((page:any) => {
+    let found = false;
+    const hasPropertySearch = (blocks: Block[]) => {
+      for(let block of blocks) {
+        if(block.name === "astroestate/property-search") {
+          found = true;
+          break;
+        }
+        if(block.innerBlocks) {
+          hasPropertySearch(block.innerBlocks);
+        }
+      }
+    }
+    hasPropertySearch(page.blocks);
+    return !found;
+  }).map((page: any) => ({
     params: {slug: page.uri === "/" ? undefined : page.uri},
-  }))
+  }));
 }
 
 const response = await fetch(`${import.meta.env.WPGRAPHQL_URL}`, {
@@ -37,8 +59,8 @@ const response = await fetch(`${import.meta.env.WPGRAPHQL_URL}`, {
     query: `
       query PageQuery($uri: String!) {
         nodeByUri(uri: $uri) {
-          ... on Page {
-            id
+          ... on ContentNode {
+            databaseId
             blocks
             seo {
               metaDesc
@@ -57,13 +79,14 @@ const {data} = await response.json();
 // const {blocks, seo} = Astro.props;
 const blocks = (data.nodeByUri?.blocks || []) as Block[];
 const seo = data.nodeByUri?.seo;
+const postId = data.nodeByUri?.databaseId;
+console.log("postId na stronie szczegółów:", postId);
 ---
 
 <!doctype html>
 <html lang="en">
   <CommonHead title={seo.title || ""} description={seo.metaDesc || ""} />
   <body>
-    <BlockRenderer blocks={blocks} />
-    <!-- <h2 class="text-2xl bg-red-700">test</h2> -->
+    <BlockRenderer blocks={blocks} postId={postId} />
   </body>
 </html>

@@ -39,7 +39,7 @@ if(overlayColor){
     overlayStyle = `background: var(--color--${overlayColor})`;
 }
 ---
-<div class={joinClasses(classes, "relative")} style={styles}>
+<div class={joinClasses(classes, "relative flex")} style={styles}>
     {!!url &&
         <Image 
             class="absolute w-full h-full max-w-full! object-cover" 

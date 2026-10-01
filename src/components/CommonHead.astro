@@ -2,6 +2,7 @@
 import '../styles/global.css'
 import { config } from '@fortawesome/fontawesome-svg-core';
 import "@fortawesome/fontawesome-svg-core/styles.css"
+import { ClientRouter } from "astro:transitions";
 config.autoAddCss = false;
 
 type Props = {
@@ -35,4 +36,5 @@ const {title, description} = Astro.props;
     {!!data.cssVariables && 
         <style set:html={`:root { ${data.cssVariables} }`}></style>
     }
+    <ClientRouter />
 </head>
